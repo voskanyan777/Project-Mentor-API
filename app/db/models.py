@@ -1,4 +1,6 @@
+from enum import Enum
 from typing import Annotated
+
 from sqlalchemy import String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -10,6 +12,11 @@ class Base(DeclarativeBase):
     pass
 
 
+class UserRole(Enum):
+    USER = 'User'
+    MENTOR = 'Mentor'
+
+
 class User(Base):
     __tablename__ = 'users'
     id: Mapped[intpk]
@@ -18,3 +25,4 @@ class User(Base):
     user_surname: Mapped[str] = mapped_column(String(40), nullable=False)
     user_email: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     hashed_password: Mapped[bytes] = mapped_column(nullable=False)
+    user_role: Mapped[str] = mapped_column(Enum(UserRole), nullable=False, default=UserRole.USER)
