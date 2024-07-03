@@ -25,4 +25,4 @@ class User(Base):
     user_surname: Mapped[str] = mapped_column(String(40), nullable=False)
     user_email: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     hashed_password: Mapped[bytes] = mapped_column(nullable=False)
-    user_role: Mapped[str] = mapped_column(Enum(UserRole), nullable=False, default=UserRole.USER)
+    user_role: Mapped[str] = mapped_column(String(6), nullable=False, default='User')
