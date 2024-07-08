@@ -52,9 +52,10 @@ async def get_user_by_email(email: str, session=Depends(get_async_session)):
             'user_role': result.user_role,
         }
         return result_dict
+    
 @auth_router.post('/v2/login')
 async def login(user: UserLogin):
-    email = user.user_email
+    email = user.email
     # password = user.password
 
     user = get_user_by_email(email)
@@ -64,6 +65,7 @@ async def login(user: UserLogin):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Incorrect email or password",
         )
+    
     access_token = manager.create_access_token(data={'sub': email})
     return {
         'access_token': access_token,
@@ -79,7 +81,7 @@ async def test_protected(user=Depends(manager)):
 
 @auth_router.post('/v1/register', status_code=status.HTTP_201_CREATED)
 async def register(user: UserCreate, session=Depends(get_async_session)):
-    query = select(User).where(User.user_email == user.user_email)
+    query = select(User).where(User.user_email == user.email)
     result = await session.scalar(query)
     if result is not None:
         raise HTTPException(
