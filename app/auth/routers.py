@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 
 from .config import query_user, manager
-from .models import UserCreate
+from .models import UserCreate, UserLogin
 from db.database import get_async_session
 from db.models import User
 
@@ -37,6 +37,38 @@ async def login(data: OAuth2PasswordRequestForm = Depends()):
         'access_token': access_token,
     }
 
+
+
+
+@manager.user_loader()
+async def get_user_by_email(email: str, session=Depends(get_async_session)):
+    query = select(User).where(User.user_email == email)
+    result = await session.execute(query)
+    result = result.all()[0][0]
+    if result:
+        result_dict = {
+            'user_login': result.user_login,
+            'user_email': result.user_email,
+            'user_role': result.user_role,
+        }
+        return result_dict
+@auth_router.post('/v2/login')
+async def login(user: UserLogin):
+    email = user.user_email
+    # password = user.password
+
+    user = get_user_by_email(email)
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect email or password",
+        )
+    access_token = manager.create_access_token(data={'sub': email})
+    return {
+        'access_token': access_token,
+        'token_type': 'Bearer',
+    }
 
 @auth_router.get('/protected')
 async def test_protected(user=Depends(manager)):

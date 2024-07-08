@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class UserCreate(BaseModel):
@@ -8,3 +8,7 @@ class UserCreate(BaseModel):
     user_email: str
     password: str
     user_role: str = 'user'
+
+class UserLogin(BaseModel):
+    user_email: str
+    user_password: str
