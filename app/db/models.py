@@ -1,7 +1,7 @@
-from enum import Enum
-from typing import Annotated
-
-from sqlalchemy import String, ForeignKey, CheckConstraint
+from typing import Annotated, AsyncGenerator
+from fastapi import Depends
+from fastapi_users.db import SQLAlchemyBaseUserTableUUID
+from sqlalchemy import String, ForeignKey, CheckConstraint, Integer
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 intpk = Annotated[int, mapped_column(primary_key=True)]
@@ -11,18 +11,28 @@ intpk = Annotated[int, mapped_column(primary_key=True)]
 class Base(DeclarativeBase):
     pass
 
-class User(Base):
-    __tablename__ = 'users'
-    __table_args__ = (CheckConstraint(
-        "user_role in ('user', 'mentor')"
-    ),)
+
+class User(SQLAlchemyBaseUserTableUUID, Base):
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+class Test(Base):
+    __tablename__ = 'tests'
     id: Mapped[intpk]
-    user_login: Mapped[str] = mapped_column(String(40), nullable=False, unique=True)
-    user_name: Mapped[str] = mapped_column(String(40), nullable=False)
-    user_surname: Mapped[str] = mapped_column(String(40), nullable=False)
-    user_email: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
-    hashed_password: Mapped[bytes] = mapped_column(nullable=False)
-    user_role: Mapped[str] = mapped_column(String(6), nullable=False, default='User')
+    some_row: Mapped[str] = mapped_column(String(30), nullable=False)
+
+
+# class User(Base):
+#     __tablename__ = 'users'
+#     __table_args__ = (CheckConstraint(
+#         "user_role in ('user', 'mentor')"
+#     ),)
+#     id: Mapped[intpk]
+#     user_login: Mapped[str] = mapped_column(String(40), nullable=False, unique=True)
+#     user_name: Mapped[str] = mapped_column(String(40), nullable=False)
+#     user_surname: Mapped[str] = mapped_column(String(40), nullable=False)
+#     user_email: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
+#     hashed_password: Mapped[bytes] = mapped_column(nullable=False)
+#     user_role: Mapped[str] = mapped_column(String(6), nullable=False, default='User')
 
 
 class Profile(Base):
@@ -33,6 +43,7 @@ class Profile(Base):
     experience: Mapped[int]
     specialization: Mapped[str] = mapped_column(String(40), nullable=False)
     photo_url: Mapped[str] = mapped_column(String(255))
+
 
 class Session(Base):
     __tablename__ = 'sessions'

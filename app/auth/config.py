@@ -1,27 +1,18 @@
-from datetime import timedelta
 import os
 from dotenv import load_dotenv
-from fastapi_login import LoginManager
+from fastapi_users.authentication import JWTStrategy, BearerTransport, AuthenticationBackend
 
 load_dotenv()
 
-SECRET_KEY = os.environ.get('SECRET_AUTH_KEY')
+SECRET = os.getenv('SECRET_AUTH_KEY')
 
-manager = LoginManager(
-    secret=SECRET_KEY,
-    token_url='auth/login',
-    default_expiry=timedelta(minutes=60),
+bearer_transport = BearerTransport(tokenUrl='auth/v1/jwt/login')
+
+def get_jwt_strategy() -> JWTStrategy:
+    return JWTStrategy(secret=SECRET, lifetime_seconds=3600)
+
+auth_backend = AuthenticationBackend(
+    name='jwt',
+    transport=bearer_transport,
+    get_strategy=get_jwt_strategy
 )
-
-fake_db = {
-    'users':{
-        'johndoe@mail.com':{
-            'name': 'John doe',
-            'password': 'hunter2'
-        }
-    }
-}
-
-@manager.user_loader()
-async def query_user(user_id: str) -> dict:
-    return fake_db["users"].get(user_id)
