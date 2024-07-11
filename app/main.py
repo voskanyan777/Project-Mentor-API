@@ -37,10 +37,10 @@ app.include_router(
     tags=["auth"],
 )
 
-@app.on_event("startup")
-async def startup():
-    async_orm = AsyncOrm()
-    await async_orm.create_tables()
+# @app.on_event("startup")
+# async def startup():
+#     async_orm = AsyncOrm()
+#     await async_orm.create_tables()
 
 @app.get('/protected')
 async def test(user: User = Depends(current_active_user)):

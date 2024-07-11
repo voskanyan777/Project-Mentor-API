@@ -1,4 +1,5 @@
-import uuid
+import os
+from dotenv import load_dotenv
 from typing import Optional
 
 from fastapi import Depends, Request
@@ -7,7 +8,9 @@ from db.models import User
 from db.database import get_user_db
 
 
-SECRET = "SECRET"
+load_dotenv()
+
+SECRET = os.getenv('SECRET_AUTH_KEY')
 
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
