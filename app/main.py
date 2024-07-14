@@ -42,8 +42,11 @@ app.include_router(
 #     async_orm = AsyncOrm()
 #     await async_orm.create_tables()
 
-@app.get('/protected')
+@app.get('/protected/users_info')
 async def test(user: User = Depends(current_active_user)):
     return {
-        'data': f'{user.email}'
+        'user_id': user.id,
+        'email': user.email,
+        'login': user.login,
+        'role': user.role,
     }
