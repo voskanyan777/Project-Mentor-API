@@ -17,14 +17,15 @@ SECRET = os.getenv('SECRET_AUTH_KEY')
 login = os.getenv("EMAIL_LOGIN")
 password = os.getenv('EMAIL_PASSWORD') 
 
-def send_message(user_email: str):
+def send_message(user_email: str, user_login: str) -> None:
     email = EmailMessage()
     email['Subject'] = 'Thanks for registration'
     email['From'] = login
-    email['To'] = 'yura.voskanyan.2003@mail.ru'
-    email.set_content('Test message')
+    email['To'] = user_email
+    HTML = f"<div><h1 style=\"text-align: center\">Hello, {user_login}!</h1><h1>We are pleased to welcome you to our project, where we help novice developers connect with experienced mentors to improve their knowledge in a certain area</h1></div>"
+    email.set_content(HTML, subtype='html')
 
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server: 
         server.login(login, password)
         server.send_message(email)
 
@@ -35,7 +36,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
 
     async def on_after_register(self, user: User, request: Optional[Request] = None):
         print(f"User {user.id} has registered.")
-        send_message(user.email)
+        send_message(user.email, user.login)
     async def on_after_forgot_password(
         self, user: User, token: str, request: Optional[Request] = None
     ):
