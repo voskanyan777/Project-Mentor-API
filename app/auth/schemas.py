@@ -1,18 +1,21 @@
+from enum import Enum
 from pydantic import EmailStr
 from fastapi_users import schemas
 
 
+class RoleEnum(str, Enum):
+    user = 'User'
+    mentor = 'Mentor'
+
 class UserRead(schemas.BaseUser[int]):
     id: int
     email: EmailStr
-    login: str
     role: str
 
 class UserCreate(schemas.BaseUserCreate):
     email: EmailStr
     password: str
-    login: str 
-    role: str 
+    role: RoleEnum 
 
 
 class UserUpdate(schemas.BaseUserUpdate):

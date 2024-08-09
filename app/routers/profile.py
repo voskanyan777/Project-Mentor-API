@@ -58,7 +58,7 @@ async def change_user_login(user_login: str,
 async def get_user_profiles(session = Depends(get_async_session)) -> dict:
     query = select(
         User.login, User.email, User.role, Profile.experience,
-          Profile.specialization, Profile.photo_url).join(Profile, User.id == Profile.user_id).where(User.role == 'user')
+          Profile.specialization, Profile.photo_url).join(Profile, User.id == Profile.user_id).where(User.role == 'User')
     result = (await session.execute(query)).all()
     result_dict = dict()
     for data in result:
@@ -77,7 +77,7 @@ async def get_user_profiles(session = Depends(get_async_session)) -> dict:
 async def get_mentor_profiles(session = Depends(get_async_session)) -> dict:
     query = select(
     User.login, User.email, User.role, Profile.experience,
-        Profile.specialization, Profile.photo_url).join(Profile, User.id == Profile.user_id).where(User.role == 'mentor')
+        Profile.specialization, Profile.photo_url).join(Profile, User.id == Profile.user_id).where(User.role == 'Mentor')
     result = (await session.execute(query)).all()
     result_dict = dict()
     for data in result:

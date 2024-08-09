@@ -14,10 +14,10 @@ class Base(DeclarativeBase):
 
 class User(SQLAlchemyBaseUserTable[int], Base):
     __table_args__ = (
-        CheckConstraint("role = 'mentor' OR role = 'user'"),
+        CheckConstraint("role = 'Mentor' OR role = 'User'"),
     )
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    login: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    login: Mapped[str] = mapped_column(String(50), unique=True, nullable=True)
     role: Mapped[str] = mapped_column(String(10), nullable=False)
 
 
