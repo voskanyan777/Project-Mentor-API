@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
@@ -39,8 +39,8 @@ async def add_profile(profile_info: CreateProfile,
 async def change_user_login(user_login: str, 
                             user: User = Depends(current_active_user),
                               session = Depends(get_async_session)) -> dict:
+    stmt = update(User).where(User.login == user.login).values(login=user_login)
     try:
-        stmt = update(User).where(User.login == user.login).values(login=user_login)
         await session.execute(stmt)
         await session.commit()
         return {
@@ -48,6 +48,8 @@ async def change_user_login(user_login: str,
         }
     
     except IntegrityError:
-        return {
-            'error message': 'This login already exists'
-        }
+        await session.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail='This login already exists'
+        )
