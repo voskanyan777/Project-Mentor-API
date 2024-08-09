@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import update
+from sqlalchemy import update, select
 from sqlalchemy.exc import IntegrityError
 from db.models import User
 from auth.config import current_active_user
@@ -53,3 +53,41 @@ async def change_user_login(user_login: str,
             status_code=400,
             detail='This login already exists'
         )
+
+@profile_router.get('/v1/user_profiles')
+async def get_user_profiles(session = Depends(get_async_session)) -> dict:
+    query = select(
+        User.login, User.email, User.role, Profile.experience,
+          Profile.specialization, Profile.photo_url).join(Profile, User.id == Profile.user_id).where(User.role == 'user')
+    result = (await session.execute(query)).all()
+    result_dict = dict()
+    for data in result:
+        result_dict[data[0]] = dict()
+        result_dict[data[0]]['login'] = data[0]
+        result_dict[data[0]]['email'] = data[1]
+        result_dict[data[0]]['experience'] = data[3]
+        result_dict[data[0]]['specialization'] = data[4]
+        result_dict[data[0]]['photo_url'] = data[5]
+    return {
+        'data': result_dict,
+        'ok': True
+    }
+
+@profile_router.get('/v1/mentor_profiles')
+async def get_mentor_profiles(session = Depends(get_async_session)) -> dict:
+    query = select(
+    User.login, User.email, User.role, Profile.experience,
+        Profile.specialization, Profile.photo_url).join(Profile, User.id == Profile.user_id).where(User.role == 'mentor')
+    result = (await session.execute(query)).all()
+    result_dict = dict()
+    for data in result:
+        result_dict[data[0]] = dict()
+        result_dict[data[0]]['login'] = data[0]
+        result_dict[data[0]]['email'] = data[1]
+        result_dict[data[0]]['experience'] = data[3]
+        result_dict[data[0]]['specialization'] = data[4]
+        result_dict[data[0]]['photo_url'] = data[5]
+    return {
+        'data': result_dict,
+        'ok': True
+    }
