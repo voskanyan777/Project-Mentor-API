@@ -13,6 +13,12 @@ class CreateProfile(BaseModel):
     specialization: str
     photo_url: str
 
+class CreateMeeting(BaseModel):
+    mentor_login: str
+    description: str
+    start_time: str # !
+    
+
 profile_router = APIRouter(
     prefix="/profile",
     tags=["profile"],
@@ -91,3 +97,10 @@ async def get_mentor_profiles(session = Depends(get_async_session)) -> dict:
         'data': result_dict,
         'ok': True
     }
+
+
+@profile_router.post('/v1/create_meetings')
+async def create_meetings(meetings_info: CreateMeeting,
+                          session=Depends(get_async_session), 
+                          user: User = Depends(current_active_user)) -> dict:
+    pass

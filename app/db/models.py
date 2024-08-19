@@ -67,3 +67,11 @@ class Review(Base):
     review_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
     rating: Mapped[int] = mapped_column(nullable=False)
     comment: Mapped[str] = mapped_column(String(350))
+
+class Meeting(Base):
+    __tablename__ = 'meeting'
+    id: Mapped[intpk]
+    user_login: Mapped[str]
+    mentor_login: Mapped[str]
+    description: Mapped[str] = mapped_column(String(350))
+    

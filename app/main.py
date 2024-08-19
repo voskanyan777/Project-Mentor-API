@@ -38,6 +38,7 @@ app.include_router(profile_router)
 #     async_orm = AsyncOrm()
 #     await async_orm.create_tables()
 
+
 @app.get('/protected/users_info')
 async def test(user: User = Depends(current_active_user)):
     return {
