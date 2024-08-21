@@ -4,7 +4,7 @@ from sqlalchemy import update, select
 from sqlalchemy.exc import IntegrityError
 from db.models import User
 from auth.config import current_active_user
-from db.models import Profile, User
+from db.models import Profile, User, Meeting
 from db.database import get_async_session
 
 class CreateProfile(BaseModel):
@@ -53,7 +53,9 @@ async def change_user_login(user_login: str,
             'ok': True
         }
     
-    except IntegrityError:
+    except IntegrityError as ex:
+        print('-'*20 + ' ERROR ' + '-'*20)
+        print(ex)
         await session.rollback()
         raise HTTPException(
             status_code=400,
@@ -103,4 +105,22 @@ async def get_mentor_profiles(session = Depends(get_async_session)) -> dict:
 async def create_meetings(meetings_info: CreateMeeting,
                           session=Depends(get_async_session), 
                           user: User = Depends(current_active_user)) -> dict:
-    pass
+    # checking for user existence
+    query = select(User.login).where(User.login == meetings_info.mentor_login)
+    result = (await session.execute(query)).all()
+    if not result:
+        raise HTTPException(
+            status_code=400,
+            detail='Given user not exists'
+            )
+    meeting = Meeting(
+        user_login=user.login,
+        mentor_login=meetings_info.mentor_login,
+        description=meetings_info.description,
+        start_time=meetings_info.start_time
+        )
+    session.add_all([meeting])
+    await session.commit()
+    return {
+        'ok': True
+    }

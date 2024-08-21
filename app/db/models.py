@@ -1,6 +1,6 @@
 from typing import Annotated, AsyncGenerator
 from fastapi import Depends
-from fastapi_users.db import SQLAlchemyBaseUserTableUUID, SQLAlchemyBaseUserTable
+from fastapi_users.db import SQLAlchemyBaseUserTable
 from sqlalchemy import String, ForeignKey, CheckConstraint, Integer
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -74,4 +74,5 @@ class Meeting(Base):
     user_login: Mapped[str]
     mentor_login: Mapped[str]
     description: Mapped[str] = mapped_column(String(350))
+    start_time: Mapped[str] = mapped_column(String(20), nullable=False)
     
