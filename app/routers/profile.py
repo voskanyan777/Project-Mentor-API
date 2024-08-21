@@ -127,17 +127,13 @@ async def create_meetings(meetings_info: CreateMeeting,
 
 @profile_router.get('/v1/meetings')
 async def get_meetings(user: User = Depends(current_active_user), session=Depends(get_async_session)) -> dict:
-    if user.role != "Mentor":
-        raise HTTPException(
-            status_code=400,
-            detail="You are not a Mentor"
-            )
     query = select(Meeting).where(Meeting.mentor_login == user.login)
     result = (await session.execute(query)).all()
     result_dict = dict()
     for index, item in enumerate(result):
         item = item[0]
-        result_dict[index + 1] = {
+        result_dict[item.id] = {
+            'id': index + 1,
             'user': item.user_login,
             'description': item.description,
             'start time': item.start_time
