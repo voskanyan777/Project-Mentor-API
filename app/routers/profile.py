@@ -38,7 +38,10 @@ async def add_profile(profile_info: CreateProfile,
     session.add(profile)
     await session.commit()
     return {
-        'ok': True
+        'data': None,
+        'ok': True,
+        'detail': None
+            
     }
 
 @profile_router.post('/v1/change_login')
@@ -50,7 +53,9 @@ async def change_user_login(user_login: str,
         await session.execute(stmt)
         await session.commit()
         return {
-            'ok': True
+            'data': None,
+            'ok': True,
+            'detail': None
         }
     
     except IntegrityError as ex:
@@ -78,7 +83,8 @@ async def get_user_profiles(session = Depends(get_async_session)) -> dict:
         result_dict[data[0]]['photo_url'] = data[5]
     return {
         'data': result_dict,
-        'ok': True
+        'ok': True,
+        'detail': None
     }
 
 @profile_router.get('/v1/mentor_profiles')
@@ -97,7 +103,8 @@ async def get_mentor_profiles(session = Depends(get_async_session)) -> dict:
         result_dict[data[0]]['photo_url'] = data[5]
     return {
         'data': result_dict,
-        'ok': True
+        'ok': True,
+        'detail': None
     }
 
 
@@ -122,13 +129,21 @@ async def create_meetings(meetings_info: CreateMeeting,
     session.add_all([meeting])
     await session.commit()
     return {
-        'ok': True
+        'data': None,
+        'ok': True,
+        'detail': None
     }
 
 @profile_router.get('/v1/meetings')
 async def get_meetings(user: User = Depends(current_active_user), session=Depends(get_async_session)) -> dict:
     query = select(Meeting).where(Meeting.mentor_login == user.login)
     result = (await session.execute(query)).all()
+    if not result:
+        return {
+            'data': None,
+            'ok': True,
+            'detail': None
+        }
     result_dict = dict()
     for index, item in enumerate(result):
         item = item[0]
@@ -139,5 +154,7 @@ async def get_meetings(user: User = Depends(current_active_user), session=Depend
             'start time': item.start_time
         }
     return {
-        'data': result_dict
+        'data': result_dict,
+        'ok': True,
+        'detail': None
     }
