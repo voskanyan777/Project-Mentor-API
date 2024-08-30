@@ -17,12 +17,12 @@ login = os.getenv("EMAIL_LOGIN")
 password = os.getenv('EMAIL_PASSWORD')
 
 
-def send_message(user_email: str, user_login: str) -> None:
+def send_message(user_email: str) -> None:
     email = EmailMessage()
     email['Subject'] = 'Thanks for registration'
     email['From'] = login
     email['To'] = user_email
-    HTML = f"<div><h1 style=\"text-align: center\">Hello, {user_login}!</h1><h1>We are pleased to welcome you to our project, where we help novice developers connect with experienced mentors to improve their knowledge in a certain area</h1></div>"
+    HTML = f"<div><h1 style=\"text-align: center\">Hello, {user_email}!</h1><h1>We are pleased to welcome you to our project, where we help novice developers connect with experienced mentors to improve their knowledge in a certain area</h1></div>"
     email.set_content(HTML, subtype='html')
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
@@ -36,7 +36,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
 
     async def on_after_register(self, user: User, request: Optional[Request] = None):
         print(f"User {user.id} has registered.")
-        send_message(user.email, user.login)
+        send_message(user.email)
 
     async def on_after_forgot_password(
             self, user: User, token: str, request: Optional[Request] = None

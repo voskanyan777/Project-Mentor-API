@@ -46,6 +46,7 @@ class Profile(Base):
     photo_url: Mapped[str] = mapped_column(String(255))
 
 
+
 class Session(Base):
     __tablename__ = 'session'
     __table_args__ = (CheckConstraint(

@@ -104,6 +104,20 @@ async def get_mentor_profiles(session = Depends(get_async_session)) -> dict:
         'detail': None
     }
 
-
-
+@profile_router.get('/v1/profile')
+async def profile(user: User=Depends(current_active_user),
+                  session=Depends(get_async_session)) -> dict:
+    query = select(Profile).where(Profile.user_id == user.id)
+    result = ((await session.execute(query)).first())[0]
+    user_profile = {
+        'bio': result.bio,
+        'experience': result.experience,
+        'specialization': result.specialization,
+        'photo_url': result.photo_url
+    }
+    return {
+        'data': user_profile,
+        'ok': True,
+        'detail': None
+    }
 

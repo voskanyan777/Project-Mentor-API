@@ -35,10 +35,10 @@ app.include_router(
 app.include_router(profile_router)
 app.include_router(meeting_router)
 
-@app.on_event("startup")
-async def startup():
-    async_orm = AsyncOrm()
-    await async_orm.create_tables()
+# @app.on_event("startup")
+# async def startup():
+#     async_orm = AsyncOrm()
+#     await async_orm.create_tables()
 
 
 @app.get('/protected/users_info')
