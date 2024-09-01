@@ -1,6 +1,4 @@
 import os
-import smtplib
-from email.message import EmailMessage
 
 from celery import Celery
 from dotenv import load_dotenv
@@ -13,8 +11,10 @@ password = os.getenv('EMAIL_PASSWORD')
 celery = Celery('tasks', broker='redis://localhost:6379')
 
 
-@celery.task
+@celery.task(name='app.auth.tasks.send_message')
 def send_message(user_email: str) -> None:
+    import smtplib
+    from email.message import EmailMessage
     email = EmailMessage()
     email['Subject'] = 'Thanks for registration'
     email['From'] = login
