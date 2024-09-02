@@ -4,6 +4,7 @@ from fastapi_users.authentication import JWTStrategy, BearerTransport, Authentic
 from fastapi_users import FastAPIUsers
 from .manager import get_user_manager
 from db.models import User
+
 load_dotenv()
 
 SECRET = os.getenv('SECRET_AUTH_KEY')

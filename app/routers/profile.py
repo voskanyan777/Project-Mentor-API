@@ -65,11 +65,13 @@ async def change_user_login(user_login: str,
         )
 
 @profile_router.get('/v1/user_profiles')
-async def get_user_profiles(session = Depends(get_async_session)) -> dict:
+async def get_user_profiles(limit: int = 10, offset: int = 0,
+                            session = Depends(get_async_session)) -> dict:
     query = select(
         User.login, User.email, User.role, Profile.experience,
-          Profile.specialization, Profile.photo_url).join(Profile, User.id == Profile.user_id).where(User.role == 'User')
+          Profile.specialization, Profile.photo_url).join(Profile, User.id == Profile.user_id).where(User.role == 'User').limit(limit).offset(offset)
     result = (await session.execute(query)).all()
+    print(query)
     result_dict = dict()
     for data in result:
         result_dict[data[0]] = dict()
@@ -85,10 +87,11 @@ async def get_user_profiles(session = Depends(get_async_session)) -> dict:
     }
 
 @profile_router.get('/v1/mentor_profiles')
-async def get_mentor_profiles(session = Depends(get_async_session)) -> dict:
+async def get_mentor_profiles(limit: int = 10, offset: int = 0, 
+                              session = Depends(get_async_session)) -> dict:
     query = select(
     User.login, User.email, User.role, Profile.experience,
-        Profile.specialization, Profile.photo_url).join(Profile, User.id == Profile.user_id).where(User.role == 'Mentor')
+        Profile.specialization, Profile.photo_url).join(Profile, User.id == Profile.user_id).where(User.role == 'Mentor').limit(limit).offset(offset)
     result = (await session.execute(query)).all()
     result_dict = dict()
     for data in result:
@@ -108,7 +111,14 @@ async def get_mentor_profiles(session = Depends(get_async_session)) -> dict:
 async def profile(user: User=Depends(current_active_user),
                   session=Depends(get_async_session)) -> dict:
     query = select(Profile).where(Profile.user_id == user.id)
-    result = ((await session.execute(query)).first())[0]
+    result = (await session.execute(query)).first()
+    if not result:
+        return {
+            'data': None,
+            'ok': True,
+            'detail': 'Profile not found'
+        }
+    result = result[0]
     user_profile = {
         'bio': result.bio,
         'experience': result.experience,

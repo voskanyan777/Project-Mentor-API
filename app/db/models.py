@@ -22,20 +22,6 @@ class User(SQLAlchemyBaseUserTable[int], Base):
 
 
 
-# class User(Base):
-#     __tablename__ = 'users'
-#     __table_args__ = (CheckConstraint(
-#         "user_role in ('user', 'mentor')"
-#     ),)
-#     id: Mapped[intpk]
-#     user_login: Mapped[str] = mapped_column(String(40), nullable=False, unique=True)
-#     user_name: Mapped[str] = mapped_column(String(40), nullable=False)
-#     user_surname: Mapped[str] = mapped_column(String(40), nullable=False)
-#     user_email: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
-#     hashed_password: Mapped[bytes] = mapped_column(nullable=False)
-#     user_role: Mapped[str] = mapped_column(String(6), nullable=False, default='User')
-
-
 class Profile(Base):
     __tablename__ = 'profile'
     id: Mapped[intpk]
