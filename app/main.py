@@ -4,12 +4,12 @@ from auth.config import auth_backend
 from auth.schemas import UserRead, UserCreate
 from routers.profile import profile_router
 from routers.meeting import meeting_router
+from routers.review import review_router
 from auth.config import fastapi_users, current_active_user
 from db.orm import AsyncOrm
 
 
 app = FastAPI()
-
 
 
 app.include_router(
@@ -34,19 +34,10 @@ app.include_router(
 )
 app.include_router(profile_router)
 app.include_router(meeting_router)
+app.include_router(review_router)
 
 # @app.on_event("startup")
 # async def startup():
 #     #
 #     async_orm = AsyncOrm()
 #     await async_orm.create_tables()
-
-
-@app.get('/protected/users_info')
-async def test(user: User = Depends(current_active_user)):
-    return {
-        'user_id': user.id,
-        'email': user.email,
-        'login': user.login,
-        'role': user.role,
-    }

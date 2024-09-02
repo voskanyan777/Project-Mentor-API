@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -14,13 +15,14 @@ meeting_router = APIRouter(
 class CreateMeeting(BaseModel):
     mentor_login: str
     description: str
-    start_time: str
+    start_time: datetime
 
 
 @meeting_router.post('/v1/create_meetings')
 async def create_meetings(meetings_info: CreateMeeting,
                           session=Depends(get_async_session), 
                           user: User = Depends(current_active_user)) -> dict:
+    # print(str(meetings_info.start_time))
     # checking for user existence
     query = select(User.login).where(User.login == meetings_info.mentor_login)
     result = (await session.execute(query)).all()
@@ -33,7 +35,7 @@ async def create_meetings(meetings_info: CreateMeeting,
         user_login=user.login,
         mentor_login=meetings_info.mentor_login,
         description=meetings_info.description,
-        start_time=meetings_info.start_time
+        start_time=str(meetings_info.start_time)
         )
     session.add_all([meeting])
     await session.commit()
@@ -45,7 +47,10 @@ async def create_meetings(meetings_info: CreateMeeting,
 
 @meeting_router.get('/v1/meetings')
 async def get_meetings(user: User=Depends(current_active_user), session=Depends(get_async_session)) -> dict:
-    query = select(Meeting).where(Meeting.mentor_login == user.login)
+    if user.role == "User":
+        query = select(Meeting).where(Meeting.user_login == user.login)
+    else:
+        query = select(Meeting).where(Meeting.mentor_login == user.login)
     result = (await session.execute(query)).all()
     if not result:
         return {

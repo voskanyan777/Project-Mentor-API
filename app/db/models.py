@@ -32,17 +32,16 @@ class Profile(Base):
     photo_url: Mapped[str] = mapped_column(String(255))
 
 
-
-class Session(Base):
-    __tablename__ = 'session'
-    __table_args__ = (CheckConstraint(
-        "status in ('planned', 'carried out', 'canceled')"
-    ),)
-    id: Mapped[intpk]
-    teacher_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
-    student_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
-    topic: Mapped[str] = mapped_column(String(90), nullable=False)
-    status: Mapped[str] = mapped_column(String(15), nullable=False)
+# class Session(Base):
+#     __tablename__ = 'session'
+#     __table_args__ = (CheckConstraint(
+#         "status in ('planned', 'carried out', 'canceled')"
+#     ),)
+#     id: Mapped[intpk]
+#     teacher_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
+#     student_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
+#     topic: Mapped[str] = mapped_column(String(90), nullable=False)
+#     status: Mapped[str] = mapped_column(String(15), nullable=False)
 
 class Review(Base):
     __tablename__ = 'review'
@@ -50,10 +49,10 @@ class Review(Base):
         'rating in (1, 2, 3, 4, 5)'
     ),)
     id: Mapped[intpk]
-    session_id: Mapped[int] = mapped_column(ForeignKey('session.id'))
-    review_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
+    review_login: Mapped[str]
+    mentor_login: Mapped[str]
     rating: Mapped[int] = mapped_column(nullable=False)
-    comment: Mapped[str] = mapped_column(String(350))
+    comment: Mapped[str] = mapped_column(String(250))
 
 class Meeting(Base):
     __tablename__ = 'meeting'
@@ -61,5 +60,4 @@ class Meeting(Base):
     user_login: Mapped[str]
     mentor_login: Mapped[str]
     description: Mapped[str] = mapped_column(String(350))
-    start_time: Mapped[str] = mapped_column(String(20), nullable=False)
-    
+    start_time: Mapped[str] = mapped_column(String(60), nullable=False)

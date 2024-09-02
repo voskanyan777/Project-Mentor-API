@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from app.db.config import DATABASE_URL
-from app.db.models import Base, User, Profile, Session, Review, Meeting
+from app.db.models import Base, User, Profile, Review, Meeting
 
 
 config = context.config
