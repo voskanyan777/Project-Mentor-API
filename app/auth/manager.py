@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, IntegerIDMixin
 
-from .tasks import send_message
+from .tasks import send_message, send_verify_email
 
 load_dotenv()
 
@@ -24,13 +24,13 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     async def on_after_forgot_password(
             self, user: User, token: str, request: Optional[Request] = None
     ):
-        pass
-
+        print(token)
+    
     async def on_after_request_verify(
             self, user: User, token: str, request: Optional[Request] = None
     ):
-        pass
-
+        print(token)
+        send_verify_email.delay(user.email, token)
 
 async def get_user_manager(user_db=Depends(get_user_db)):
     yield UserManager(user_db)
