@@ -29,11 +29,6 @@ profile_router = APIRouter(
 async def add_profile(profile_info: CreateProfile, 
                       user: User = Depends(verify_user), 
                       session = Depends(get_async_session)) -> dict:
-    if user.is_verified == False:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You're not verified"
-        )
     profile = Profile(user_id=user.id,
                       bio=profile_info.bio,
                       experience=profile_info.experience,
