@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy import update, select
 from sqlalchemy.exc import IntegrityError
 from auth.config import current_active_user
 from db.models import Profile, User
 from db.database import get_async_session
+from .dependencies import verify_user
 
 class CreateProfile(BaseModel):
     bio: str
@@ -24,11 +25,15 @@ profile_router = APIRouter(
 )
 
 
-
 @profile_router.post("/v1/add_profile")
 async def add_profile(profile_info: CreateProfile, 
-                      user: User = Depends(current_active_user), 
+                      user: User = Depends(verify_user), 
                       session = Depends(get_async_session)) -> dict:
+    if user.is_verified == False:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You're not verified"
+        )
     profile = Profile(user_id=user.id,
                       bio=profile_info.bio,
                       experience=profile_info.experience,
@@ -45,7 +50,7 @@ async def add_profile(profile_info: CreateProfile,
 
 @profile_router.post('/v1/change_login')
 async def change_user_login(user_login: str, 
-                            user: User = Depends(current_active_user),
+                            user: User = Depends(verify_user),
                               session = Depends(get_async_session)) -> dict:
     stmt = update(User).where(User.login == user.login).values(login=user_login)
     try:

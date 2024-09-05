@@ -1,10 +1,11 @@
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy import select
 from auth.config import current_active_user
 from db.models import Meeting, User
 from db.database import get_async_session
+from .dependencies import verify_user
 
 meeting_router = APIRouter(
     prefix='/meeting',
@@ -21,8 +22,8 @@ class CreateMeeting(BaseModel):
 @meeting_router.post('/v1/create_meetings')
 async def create_meetings(meetings_info: CreateMeeting,
                           session=Depends(get_async_session), 
-                          user: User = Depends(current_active_user)) -> dict:
-    # print(str(meetings_info.start_time))
+                          user: User = Depends(verify_user)) -> dict:
+
     # checking for user existence
     query = select(User.login).where(User.login == meetings_info.mentor_login)
     result = (await session.execute(query)).all()

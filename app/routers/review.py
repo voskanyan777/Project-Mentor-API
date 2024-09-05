@@ -4,6 +4,7 @@ from sqlalchemy import select
 from db.models import User, Review
 from db.database import get_async_session
 from auth.config import current_active_user
+from .dependencies import verify_user
 
 review_router = APIRouter(
     prefix='/review',
@@ -17,7 +18,7 @@ class UserReview(BaseModel):
 
 
 @review_router.post('/v1/create_reviews')
-async def create_review(user_review: UserReview, user: User=Depends(current_active_user),
+async def create_review(user_review: UserReview, user: User=Depends(verify_user),
                         session=Depends(get_async_session)) -> dict:
     review = Review(
         review_login=user.login,
