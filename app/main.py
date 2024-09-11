@@ -38,8 +38,9 @@ app.include_router(review_router)
 
 
 
-# @app.on_event("startup")
-# async def startup():
-#     #
-#     async_orm = AsyncOrm()
-#     await async_orm.create_tables()
+
+@app.on_event("startup")
+async def startup():
+    #
+    async_orm = AsyncOrm()
+    await async_orm.create_tables()
