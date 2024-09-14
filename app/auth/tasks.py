@@ -10,11 +10,12 @@ load_dotenv()
 login = os.getenv("EMAIL_LOGIN")
 password = os.getenv('EMAIL_PASSWORD')
 
-celery = Celery('tasks', broker='redis://localhost:6379')
+celery = Celery('tasks', broker='redis://redis_db:6379')
 
 
 @celery.task(name='app.auth.tasks.send_message')
 def send_message(user_email: str) -> None:
+    print('FUNCTION HAS BEEN CALLED')
     email = EmailMessage()
     email['Subject'] = 'Thanks for registration'
     email['From'] = login

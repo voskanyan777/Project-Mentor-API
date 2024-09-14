@@ -9,6 +9,7 @@ from fastapi_users import BaseUserManager, IntegerIDMixin
 
 from .tasks import send_message, send_verify_email
 
+
 load_dotenv()
 
 SECRET = os.getenv('SECRET_AUTH_KEY')
