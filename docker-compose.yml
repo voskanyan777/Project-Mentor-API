@@ -11,6 +11,7 @@ services:
     depends_on:
       - postgres_db
       - redis_db
+
   postgres_db:
     image: postgres:14
     container_name: postgres_db
@@ -20,6 +21,7 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
+
   redis_db:
     image: redis:latest
     container_name: redis_db
@@ -27,19 +29,10 @@ services:
       - "6379:6379"
 
   celery:
-    build:
+    build: 
       context: .
-    container_name: celery_app
-    command: celery -A app.auth.tasks:celery worker --loglevel=INFO --pool=solo
     depends_on:
       - redis_db
+    command: celery -A auth.tasks:celery worker --loglevel=INFO --pool=solo
 
-  flower:
-    build:
-      context: .
-    container_name: flower_app
-    command: celery -A app.auth.tasks:celery flower
-    depends_on:
-      - redis_db
-    ports:
-      - "5555:5555"
+    
