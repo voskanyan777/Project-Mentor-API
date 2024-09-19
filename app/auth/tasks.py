@@ -9,8 +9,9 @@ load_dotenv()
 
 login = os.getenv("EMAIL_LOGIN")
 password = os.getenv('EMAIL_PASSWORD')
+redis_host = os.getenv("REDIS_HOST")
 
-celery = Celery('tasks', broker='redis://redis_db:6379')
+celery = Celery('tasks', broker=f'redis://{redis_host}:6379')
 
 
 @celery.task(name='app.auth.tasks.send_message')

@@ -34,5 +34,7 @@ services:
     depends_on:
       - redis_db
     command: celery -A auth.tasks:celery worker --loglevel=INFO --pool=solo
+    environment:
+      - REDIS_HOST=redis_db
 
     
